@@ -64,9 +64,6 @@ async function run() {
             }
 
             const result = await addToysCollection.find(query).toArray();
-
-            // const cursor = addToysCollection.find();
-            // const result = await cursor.toArray();
             res.send(result)
         })
 
