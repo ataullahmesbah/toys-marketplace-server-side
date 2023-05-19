@@ -65,12 +65,19 @@ async function run() {
 
             const result = await addToysCollection.find(query).toArray();
             res.send(result)
-        })
+        }) 
 
         app.post('/addtoys', async (req, res) => {
             const addToys = req.body;
             console.log(addToys);
             const result = await addToysCollection.insertOne(addToys);
+            res.send(result)
+        })
+
+        app.delete('/addtoys/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)}
+            const result = await addToysCollection.deleteOne(query)
             res.send(result)
         })
 
