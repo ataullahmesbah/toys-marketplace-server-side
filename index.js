@@ -67,6 +67,11 @@ async function run() {
             res.send(result)
         }) 
 
+        // app.get('/addtoys', async(req, res) => {
+        //     const result = await addToysCollection.filter().toArray();
+        //     res.send(result)
+        // })
+
         app.post('/addtoys', async (req, res) => {
             const addToys = req.body;
             console.log(addToys);
