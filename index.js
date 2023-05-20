@@ -57,6 +57,16 @@ async function run() {
             res.send(result)
         })
 
+        // all toys
+
+        app.get('/addtoys', async(req, res) => {
+            const cursor = addToysCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        // my toys
+
         app.get('/addtoys', async (req, res) => {
             let query = {};
             if (req.query?.email) {
@@ -66,11 +76,6 @@ async function run() {
             const result = await addToysCollection.find(query).toArray();
             res.send(result)
         }) 
-
-        // app.get('/addtoys', async(req, res) => {
-        //     const result = await addToysCollection.filter().toArray();
-        //     res.send(result)
-        // })
 
         app.post('/addtoys', async (req, res) => {
             const addToys = req.body;
