@@ -40,14 +40,7 @@ async function run() {
         })
 
         app.get('/toysshop/:id', async (req, res) => {
-            // try {
-            //   const toysCollection = client.db('toysAssignment').collection('toysshop');
             const id = req.params.id;
-
-            // Validate the ID format
-            //   if (!ObjectId.isValid(id)) {
-            //     return res.status(400).send('Invalid ID');
-            //   }
 
             const query = {
                 toys: [
@@ -64,16 +57,31 @@ async function run() {
             }
             // console.log(result);
             // console.log(toys);
-            
+
             const toy = toys.find(item => item._id === id)
 
-            //   if (!result) {
-            //     return res.status(404).send('Toy not found');
-            //   }
-            // console.log(result);
             res.send(toy);
 
         });
+
+
+        // search toy
+        const indexKeys = { name: 1 };
+        const indexOptions = { toyName: "toyName" };
+
+        const result = await addToysCollection.createIndex(indexKeys, indexOptions);
+
+        app.get('/toySearchByTitle/:text', async (req, res) => {
+            const searchToy = req.params.text;
+
+            const result = await addToysCollection.find({
+                $or: [
+                    { name: {$regex: searchToy, $options: "i"}},
+                ]
+            }).toArray();
+
+            res.send(result);
+        })
 
 
         // all toys
