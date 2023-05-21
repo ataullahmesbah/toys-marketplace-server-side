@@ -40,37 +40,49 @@ async function run() {
         })
 
         app.get('/toysshop/:id', async (req, res) => {
-            try {
-              const toysCollection = client.db('toysAssignment').collection('toysshop');
-              const id = req.params.id;
-          
-              // Validate the ID format
-              if (!ObjectId.isValid(id)) {
-                return res.status(400).send('Invalid ID');
-              }
-          
-              const query = { _id: new ObjectId(id) };
-              const result = await toysCollection.findOne(query);
-          
-              if (!result) {
-                return res.status(404).send('Toy not found');
-              }
-          console.log(result);
-              res.send(result);
-            } catch (error) {
-              console.error(error);
-              res.status(500).send('Internal Server Error');
+            // try {
+            //   const toysCollection = client.db('toysAssignment').collection('toysshop');
+            const id = req.params.id;
+
+            // Validate the ID format
+            //   if (!ObjectId.isValid(id)) {
+            //     return res.status(400).send('Invalid ID');
+            //   }
+
+            const query = {
+                toys: [
+                    {
+                        _id: id
+                    }
+                ]
             }
-          });
-          
+            const result = await toysCollection.find().toArray();
+            const toys = []
+            for (let data of result) {
+                toys.push(data.toys[0])
+                toys.push(data.toys[1])
+            }
+            // console.log(result);
+            // console.log(toys);
+            
+            const toy = toys.find(item => item._id === id)
+
+            //   if (!result) {
+            //     return res.status(404).send('Toy not found');
+            //   }
+            // console.log(result);
+            res.send(toy);
+
+        });
+
 
         // all toys
-        
-        app.get('/addtoys', async (req, res) => {
-            const cursor = addToysCollection.find();
-            const result = await cursor.toArray();
-            res.send(result);
-        })
+
+        // app.get('/addtoys', async (req, res) => {
+        //     const cursor = addToysCollection.find();
+        //     const result = await cursor.toArray();
+        //     res.send(result);
+        // })
 
         // my toys
 
