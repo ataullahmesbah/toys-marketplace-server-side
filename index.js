@@ -32,6 +32,7 @@ async function run() {
 
         const addToysCollection = client.db('toysAssignment').collection('addtoys')
 
+
         app.get('/toysshop', async (req, res) => {
             const cursor = toysCollection.find();
             const result = await cursor.toArray();
@@ -39,27 +40,33 @@ async function run() {
         })
 
         app.get('/toysshop/:id', async (req, res) => {
-            const id = req.params.id;
-            console.log(id);
-            const query = { _id: new ObjectId(id) }
-
-            const options = {
-                projection: { name: 1, price: 1, details: 1, image: 1 },
+            try {
+              const toysCollection = client.db('toysAssignment').collection('toysshop');
+              const id = req.params.id;
+          
+              // Validate the ID format
+              if (!ObjectId.isValid(id)) {
+                return res.status(400).send('Invalid ID');
+              }
+          
+              const query = { _id: new ObjectId(id) };
+              const result = await toysCollection.findOne(query);
+          
+              if (!result) {
+                return res.status(404).send('Toy not found');
+              }
+          console.log(result);
+              res.send(result);
+            } catch (error) {
+              console.error(error);
+              res.status(500).send('Internal Server Error');
             }
-
-            const result = await toysCollection.findOne(query, options);
-
-            if (!result) {
-                return res.status(404).send("Toy not found")
-            }
-            result._id = result._id.toString();
-            console.log(result);
-            res.send(result)
-        })
+          });
+          
 
         // all toys
-
-        app.get('/addtoys', async(req, res) => {
+        
+        app.get('/addtoys', async (req, res) => {
             const cursor = addToysCollection.find();
             const result = await cursor.toArray();
             res.send(result);
@@ -72,10 +79,9 @@ async function run() {
             if (req.query?.email) {
                 query = { email: req.query.email }
             }
-
             const result = await addToysCollection.find(query).toArray();
             res.send(result)
-        }) 
+        })
 
         app.post('/addtoys', async (req, res) => {
             const addToys = req.body;
@@ -84,17 +90,17 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/addtoys/:id', async(req, res) => {
+        app.get('/addtoys/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await addToysCollection.findOne(query);
             res.send(result);
         })
 
-        app.put('/addtoys/:id', async(req, res) => {
+        app.put('/addtoys/:id', async (req, res) => {
             const id = req.params.id;
-            const filter = {_id: new ObjectId(id)}
-            const options = {upsert: true};
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true };
             const updatedToys = req.body;
             const toys = {
                 $set: {
@@ -108,9 +114,9 @@ async function run() {
             res.send(result);
         })
 
-        app.delete('/addtoys/:id', async(req, res) => {
+        app.delete('/addtoys/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await addToysCollection.deleteOne(query)
             res.send(result)
         })
